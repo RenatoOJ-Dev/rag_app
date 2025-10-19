@@ -7,7 +7,8 @@ from dia2_carregar_dados import carregar_e_dividir_chunks  # ← Importa a funç
 load_dotenv()
 
 # 1. Obter chunks do Dia 2
-chunks = carregar_e_dividir_chunks(r"usando API do google\data\dados_empresa.txt")
+chunks = carregar_e_dividir_chunks(r"usando_API_do_google\data\dados_empresa.txt")
+# print(chunks[0].page_content)
 
 # 2. Criar embeddings e vector store
 embedding_model = GoogleGenerativeAIEmbeddings(
@@ -16,13 +17,15 @@ embedding_model = GoogleGenerativeAIEmbeddings(
 )
 
 vectorstore = Chroma.from_documents(documents=chunks, embedding=embedding_model)
-retriever = vectorstore.as_retriever()
+retriever = vectorstore.as_retriever(search_kwargs={"k": 1})
 
 # 3. Testar
-pergunta = "Qual o horário da TechVision?"
+pergunta = "Qual é a razão social"
 resultados = retriever.invoke(pergunta)
 
 print(f"🔍 Encontrados {len(resultados)} chunks relevantes:\n")
+print(f"🔍 Encontrados {len(resultados)} chunks relevantes:\n")
+
 for i, doc in enumerate(resultados):
     print(f"📄 Chunk {i+1}:")
     print(doc.page_content[:300] + "..." if len(doc.page_content) > 300 else doc.page_content)

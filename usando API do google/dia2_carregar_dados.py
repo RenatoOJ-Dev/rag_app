@@ -2,6 +2,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import os
 
+
 def carregar_e_dividir_chunks(caminho_arquivo="dados_empresa.txt"):
     """
     Carrega um arquivo .txt e divide em chunks inteligentes.

@@ -1,6 +1,7 @@
 # rag_core.py
 from dotenv import load_dotenv
 import os
+from pydantic import SecretStr
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
@@ -10,15 +11,16 @@ from dia2_carregar_dados import carregar_e_dividir_chunks
 
 # Carrega a chave uma vez
 load_dotenv()
+raw_api = os.getenv("CHAVE_API_GOOGLE")
+api_key = SecretStr(raw_api) if raw_api else None
+
 
 def criar_rag_chain(caminho_dados=None):
     """
     Cria e retorna uma cadeia RAG pronta para uso.
-    
     Args:
         caminho_dados (str, opcional): caminho para o arquivo de dados.
                                        Se None, usa o padrão.
-    
     Returns:
         Runnable: cadeia RAG pronta para .invoke(pergunta)
     """
@@ -30,7 +32,7 @@ def criar_rag_chain(caminho_dados=None):
     # 2. Criar embeddings e vector store
     embedding_model = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
-        google_api_key=os.getenv("CHAVE_API_GOOGLE")
+        google_api_key=api_key
     )
     vectorstore = FAISS.from_documents(documents=chunks, embedding=embedding_model)
     retriever = vectorstore.as_retriever(search_kwargs={"k": 4})

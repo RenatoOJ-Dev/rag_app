@@ -11,6 +11,7 @@ path_to_document = r"usando API do google\data\dados_empresa.txt"
 
 raw_key = os.getenv("GOOGLE_API_KEY")
 api_key = SecretStr(raw_key) if raw_key else None
+
 # 1. Obter chunks do Dia 2
 chunks = carregar_e_dividir_chunks(path_to_document)
 # print(chunks[0].page_content)
@@ -30,6 +31,6 @@ resultados = retriever.invoke(pergunta)
 
 print(f"🔍 Encontrados {len(resultados)} chunks relevantes:\n")
 for i, doc in enumerate(resultados):
-    print(f"📄 Chunk {i+1}:")
+    print(f"📄 Chunk {i + 1}:")
     print(doc.page_content[:300] + "..." if len(doc.page_content) > 300 else doc.page_content)
     print("-" * 50)

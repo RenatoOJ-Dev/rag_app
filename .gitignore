@@ -146,3 +146,6 @@ poetry.lock
 
 # If you add other environment folders, add them here
 .envrc
+
+# Optinonal
+.flake8

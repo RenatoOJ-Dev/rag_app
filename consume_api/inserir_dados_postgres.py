@@ -8,12 +8,12 @@ import os
 from pydantic import SecretStr
 import json
 
-# Carregar variáveis de ambiente
+
 load_dotenv()
 raw_api = os.getenv("CHAVE_API_GOOGLE")
 api_key = SecretStr(raw_api) if raw_api else None
 
-# Conectar ao PostgreSQL
+# to me connect aqui ao database postgresql
 print("🔌 Conectando ao PostgreSQL...")
 conn = psycopg2.connect(
     host="localhost",
@@ -25,24 +25,22 @@ conn = psycopg2.connect(
 cur = conn.cursor()
 print("✅ Conexão estabelecida!")
 
-# Carregar chunks do arquivo
+
 print("\n📄 Carregando chunks do arquivo...")
 chunks = carregar_e_dividir_chunks("consume_api/data/wiki_nexus_monitor.txt")
 print(f"✅ {len(chunks)} chunks carregados")
 
-# Criar modelo de embeddings
-print("\n🧠 Criando modelo de embeddings...")
+
 embedding_model = GoogleGenerativeAIEmbeddings(
     model="gemini-embedding-001",
     google_api_key=api_key
 )
 print("✅ Modelo de embeddings criado!")
 
-# Gerar embeddings para cada chunk
-print("\n🔄 Gerando embeddings para cada chunk...")
+
 embeddings = []
 for i, chunk in enumerate(chunks):
-    print(f"  Chunk {i+1}/{len(chunks)}...", end="\r")
+    print(f"  Chunk {i + 1}/{len(chunks)}...", end="\r")
     embedding = embedding_model.embed_query(chunk.page_content)
     embeddings.append(embedding)
 print(f"\n✅ {len(embeddings)} embeddings gerados!")
@@ -68,7 +66,7 @@ print("\n💾 Inserindo dados no banco...")
 execute_values(
     cur,
     """
-    INSERT INTO documentos 
+    INSERT INTO documentos
     (document_id, chunk_text, chunk_index, section, embedding, metadata)
     VALUES %s
     """,

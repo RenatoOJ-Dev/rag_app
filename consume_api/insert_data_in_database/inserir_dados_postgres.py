@@ -1,8 +1,7 @@
-# inserir_dados_postgres.py
 import psycopg2
 from psycopg2.extras import execute_values
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from make_chunks import carregar_e_dividir_chunks
+from consume_api.insert_data_in_database.make_chunks import carregar_e_dividir_chunks
 from dotenv import load_dotenv
 import os
 from pydantic import SecretStr

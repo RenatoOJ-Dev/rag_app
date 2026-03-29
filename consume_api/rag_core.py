@@ -1,54 +1,49 @@
+# rag_core.py
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.vectorstores import PGVector
-# from make_chunks import carregar_e_dividir_chunks
 from dotenv import load_dotenv
 from pydantic import SecretStr
 import os
-
 
 load_dotenv()
 raw_api = os.getenv("CHAVE_API_GOOGLE")
 api_key = SecretStr(raw_api) if raw_api else None
 
 
-def criar_rag_chain(caminho_dados=None):
+def criar_rag_chain():
     """
-    Cria e retorna uma cadeia RAG pronta para uso.
-    Args:
-        caminho_dados (str, opcional): caminho para o arquivo de dados.
-                                       Se None, usa o padrão.
-    Returns:
-        Runnable: cadeia RAG pronta para .invoke(pergunta)
+    Cria e retorna uma cadeia RAG pronta para uso com PostgreSQL.
+    Usa dados já existentes no banco de dados.
     """
-    from make_chunks import carregar_e_dividir_chunks
-    if caminho_dados is None:
-        caminho_dados = r"consume_api/data/wiki_nexus_monitor.txt"
-    chunks = carregar_e_dividir_chunks(caminho_dados)
-
+    
+    # 1. Criar modelo de embeddings (só para busca, não para inserir)
     embedding_model = GoogleGenerativeAIEmbeddings(
         model="gemini-embedding-001",
         google_api_key=api_key
     )
+    
+    # 2. Conectar ao PostgreSQL existente (não apaga nada!)
     connection_string = "postgresql://postgres:senha123@localhost:5432/rag_db"
-
-    vectorstore = PGVector.from_documents(
-        documents=chunks,
-        embedding=embedding_model,
+    
+    vectorstore = PGVector(
         connection_string=connection_string,
-        collection_name='documentos',
-        pre_delete_collection=True
+        embedding_function=embedding_model,
+        collection_name='documentos'
     )
+    
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
-    # Essa parte e a llm
+    # 3. Criar LLM
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         google_api_key=os.getenv("CHAVE_API_GOOGLE"),
         temperature=0.4
     )
+
+    # 4. Montar prompt e cadeia
     template = """
 Você é um assistente homem, gentil e útil da empresa TechVision Solutions, chamado Ulos.
 Responda com base nas informações a seguir.
@@ -65,7 +60,7 @@ Resposta:
 
     rag_chain = (
         {"context": retriever, "question": RunnablePassthrough()}
-        | prompt  # <- Piper
+        | prompt
         | llm
         | StrOutputParser()
     )

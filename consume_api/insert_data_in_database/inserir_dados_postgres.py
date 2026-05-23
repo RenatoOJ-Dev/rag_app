@@ -8,6 +8,7 @@ from pydantic import SecretStr
 import json
 from loguru import logger
 
+# PGPASSWORD=senha123 psql -h localhost -U postgres -d rag_db
 
 load_dotenv()
 raw_api = os.getenv("CHAVE_API_GOOGLE")
@@ -27,7 +28,7 @@ logger.success("✅ Conexão estabelecida!")
 
 
 logger.info("\n📄 Carregando chunks do arquivo...")
-chunks = carregar_e_dividir_chunks("consume_api/data/wiki_nexus_monitor.txt")
+chunks = carregar_e_dividir_chunks("data_example/wiki_nexus_monitor.txt")
 logger.success(f"✅ {len(chunks)} chunks carregados")
 
 

@@ -11,7 +11,7 @@ api_key = SecretStr(raw_api) if raw_api else None
 # Criar modelo
 embedding_model = GoogleGenerativeAIEmbeddings(
     model="gemini-embedding-001",
-    google_api_key=api_key
+    api_key=api_key
 )
 
 # Gerar embedding de uma pergunta

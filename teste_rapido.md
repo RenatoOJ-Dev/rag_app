@@ -1,3 +1,5 @@
+`Esse é um teste rápido de busca dentro do database.`
+
 SELECT 
     id, 
     chunk_text,

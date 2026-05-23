@@ -18,22 +18,22 @@ def criar_rag_chain():
     Cria e retorna uma cadeia RAG pronta para uso com PostgreSQL.
     Usa dados já existentes no banco de dados.
     """
-    
+
     # 1. Criar modelo de embeddings (só para busca, não para inserir)
     embedding_model = GoogleGenerativeAIEmbeddings(
-        model="gemini-embedding-001",
-        google_api_key=api_key
+        model="gemini-embedding-2",
+        api_key=api_key
     )
-    
+
     # 2. Conectar ao PostgreSQL existente (não apaga nada!)
     connection_string = "postgresql://postgres:senha123@localhost:5432/rag_db"
-    
+
     vectorstore = PGVector(
         connection_string=connection_string,
         embedding_function=embedding_model,
         collection_name='documentos'
     )
-    
+
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
     # 3. Criar LLM

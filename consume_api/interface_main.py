@@ -3,7 +3,7 @@ import streamlit as st
 from rag_core import criar_rag_chain
 
 
-st.title("Assistente da TechVision (PostgreSQL)")
+st.title("Assistente da TechVision")
 
 pergunta = st.text_input("Faça uma pergunta:")
 

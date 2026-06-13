@@ -149,3 +149,6 @@ poetry.lock
 
 # Optinonal
 .flake8
+
+# Virtual environment
+.venv/
